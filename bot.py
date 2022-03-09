@@ -1,17 +1,17 @@
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
-from imagefetch import FetchImage
-from imagemodify import ModifyImage
+from imagefetch import fetchimage
+from imagemodify import modifyimage
 
 
 def hello(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}')
     
 def fetch(update: Update, context: CallbackContext) -> None:
-    FetchImage('Nature')
+    fetchimage('Nature')
     
 def mod(update: Update, context: CallbackContext) -> None:
-    ModifyImage('some quote','-Some Guy')
+    modifyimage('some quote','-Some Guy')
 
 updater = Updater('<Bot Token Here>')
 

@@ -6,49 +6,42 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-def ModifyImage(quote,source):
+def modifyimage(quote: str,source: str):
+    """
+    Takes a downloaded image and adds the quote and source to it.
+    Deletes the original image and saves the edited image.
+
+    Args:
+        quote (str):
+        source (str):
+    """
+    
     # Open the image
     img = Image.open('downloads/raw.jpg')
 
+    # Text wrapping for our quote
     quote = textwrap.fill(text=quote,width=20)
 
     # Prep adding of 2D graphics
     I1 = ImageDraw.Draw(img)
 
-    # Custom font for shadow
-    myShadow = ImageFont.truetype('fonts/FreeMonoBold.ttf',100)
+    # Style quote shadow and add to image
+    myshadow = ImageFont.truetype('fonts/FreeMonoBold.ttf',100)
+    I1.multiline_text((400, 250), quote, font=myshadow, fill =(255, 255, 255), align='center')
 
-    # Add Text to an image
-    I1.multiline_text((400, 250), quote, font=myShadow, fill =(255, 255, 255), align='center')
+    # Style quote text and add to image
+    myfont = ImageFont.truetype('fonts/FreeMono.ttf', 100)
+    I1.multiline_text((400, 250), quote, font=myfont, fill =(0, 0, 0), align='center')
 
-    # Custom font style and font size
-    myFont = ImageFont.truetype('fonts/FreeMono.ttf', 100)
+    # Style source shadow and add to image
+    myshadow = ImageFont.truetype('fonts/FreeMonoBold.ttf',90)
+    I1.text((810, 810), source, font=myshadow, fill =(255, 255, 255))
 
-    # Add Text to an image
-    I1.multiline_text((400, 250), quote, font=myFont, fill =(0, 0, 0), align='center')
+    # Style source text and add to image
+    myfont = ImageFont.truetype('fonts/FreeMono.ttf', 90)
+    I1.text((810, 810), source, font=myfont, fill =(0, 0, 0))
 
-    # # ==================
-
-    # Prep adding of 2D graphics
-    I1 = ImageDraw.Draw(img)
-
-    # Custom font for shadow
-    myShadow = ImageFont.truetype('fonts/FreeMonoBold.ttf',90)
-
-    # Add Text to an image
-    I1.text((810, 810), source, font=myShadow, fill =(255, 255, 255))
-
-    # Custom font style and font size
-    myFont = ImageFont.truetype('fonts/FreeMono.ttf', 90)
-
-    # Add Text to an image
-    I1.text((810, 810), source, font=myFont, fill =(0, 0, 0))
-
-    # Display edited image
+    # Display and save the edited image and delete the original
     img.show()
-    
-    # Save the edited image
     img.save("downloads/quote.jpg")
-    
-    # Delete original
     os.remove("downloads/raw.jpg")
