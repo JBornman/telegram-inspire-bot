@@ -21,7 +21,7 @@ def gen(update: Update, context: CallbackContext) -> None:
     modifyimage('some quote', '-Some Guy')
 
 
-updater = Updater('5141259518:AAHFVKfu1ErF4XFrq1u0whbrjIQHgb-APVU')
+updater = Updater('<Token>')
 
 updater.dispatcher.add_handler(CommandHandler('hello', hello))
 updater.dispatcher.add_handler(CommandHandler('Fetch', fetch))
