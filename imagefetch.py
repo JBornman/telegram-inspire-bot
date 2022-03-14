@@ -22,7 +22,8 @@ def fetchimage(search: str):
         'ratios': '16x9',
         'q': search,
         'sorting': 'random',
-        'seed': 'atxFqe'
+        'seed': 'atxFqe',
+        'purity': '111'
     }
 
     # Send the wallhaven image search request

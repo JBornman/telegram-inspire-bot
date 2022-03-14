@@ -1,5 +1,5 @@
 from turtle import up
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
+from telegram import Bot, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -28,8 +28,12 @@ def start(update: Update, context: CallbackContext) -> int:
     Returns:
         state_quote (int): status update to quote status
     """
-    update.message.reply_text('Hello I am TiBot the quote wallpapers generation bot, send me a plaintext quote so I can show you what I can do')
+
+    update.message.reply_text(
+        'Hello I am TiBot the quote wallpapers generation bot, send me a plaintext quote so I can show you what I can do'
+    )
     return state_quote
+
 
 def again(update: Update, context: CallbackContext) -> int:
     """
@@ -44,6 +48,7 @@ def again(update: Update, context: CallbackContext) -> int:
     """
     update.message.reply_text('Please send me a quote')
     return state_quote
+
 
 def quote(update: Update, context: CallbackContext) -> int:
     """
@@ -94,14 +99,22 @@ def image(update: Update, context: CallbackContext) -> int:
     Returns:
         END (int): status update to end conversation
     """
+    bot = Bot('<token>')
     global image_seed
+    chat_id = update.message.chat_id
     image_seed = update.message.text
-    fetchimage(image_seed)
-    modifyimage(quote, source)
-    update.message.reply_text('Done please find attatched')
-    update.message.reply_photo(open("downloads/quote.jpg", 'rb'))
-    update.message.reply_text('If you want to generate another image just send /again')
-    return ConversationHandler.END
+    try: # Try to get the image and map the quote
+        fetchimage(image_seed)
+        modifyimage(quote, source)
+        bot.send_message(chat_id, 'Done please find attatched')
+        bot.send_photo(chat_id, photo=open("downloads/quote.jpg", 'rb'))
+        update.message.reply_text(
+        'If you want to generate another image just send /quote')
+        return ConversationHandler.END
+    except: # Image not found error and loop back
+        bot.send_message(chat_id, 'No images with that seed, please send another seed')
+        return state_image
+    
 
 
 def cancel(update: Update, context: CallbackContext) -> int:
@@ -116,7 +129,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
         END (int): status update to end conversation
     """
     user = update.message.from_user
-    update.message.reply_text('Bye bye '+user.username)
+    update.message.reply_text('Bye bye ' + user.username)
     return ConversationHandler.END
 
 
@@ -133,10 +146,11 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[
             CommandHandler('start', start),
-            CommandHandler('quote', quote),
-            CommandHandler('source', source),
-            CommandHandler('image', image),
-            CommandHandler('again', again),
+            # CommandHandler('quote', quote),
+            # CommandHandler('source', source),
+            # CommandHandler('image', image),
+            CommandHandler('quote', again),
+            CommandHandler('cancel', cancel)
         ],
         states={
             state_quote: [MessageHandler(Filters.text, quote)],
