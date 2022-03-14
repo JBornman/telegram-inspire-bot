@@ -18,11 +18,44 @@ image_seed: str = ''
 
 
 def start(update: Update, context: CallbackContext) -> int:
-    update.message.reply_text('Hello time for the thing, send me a quote')
+    """
+    Initialize the conversation with the user and asks user for quote value
+
+    Args:
+        update (Update): incomming update object
+        context (CallbackContext): callback for dispatching
+
+    Returns:
+        state_quote (int): status update to quote status
+    """
+    update.message.reply_text('Hello I am TiBot the quote wallpapers generation bot, send me a plaintext quote so I can show you what I can do')
     return state_quote
 
+def again(update: Update, context: CallbackContext) -> int:
+    """
+    Restart the conversation with the user and asks user for quote value
+
+    Args:
+        update (Update): incomming update object
+        context (CallbackContext): callback for dispatching
+
+    Returns:
+        state_quote (int): status update to quote status
+    """
+    update.message.reply_text('Please send me a quote')
+    return state_quote
 
 def quote(update: Update, context: CallbackContext) -> int:
+    """
+    Updates  global quote value and asks user for source value
+
+    Args:
+        update (Update): incomming update object
+        context (CallbackContext): callback for dispatching
+
+    Returns:
+        state_source (int): status update to source status
+    """
     global quote
     quote = update.message.text
     update.message.reply_text('and who said "' + quote + '"')
@@ -30,6 +63,16 @@ def quote(update: Update, context: CallbackContext) -> int:
 
 
 def source(update: Update, context: CallbackContext) -> int:
+    """
+    Updates the global source value and asks user for image search term
+
+    Args:
+        update (Update): incomming update object
+        context (CallbackContext): callback for dispatching
+
+    Returns:
+        state_image (int): status update to image status
+    """
     global source
     source = '-' + update.message.text
     update.message.reply_text(
@@ -38,22 +81,49 @@ def source(update: Update, context: CallbackContext) -> int:
 
 
 def image(update: Update, context: CallbackContext) -> int:
+    """
+    Updates the global image seed.
+    Fetch the image from using imagefetch.py.
+    Add the quote and source to the image using imagemodify.py.
+    Send completed image to user.
+
+    Args:
+        update (Update): incomming update object
+        context (CallbackContext): callback for dispatching
+
+    Returns:
+        END (int): status update to end conversation
+    """
     global image_seed
     image_seed = update.message.text
     fetchimage(image_seed)
     modifyimage(quote, source)
     update.message.reply_text('Done please find attatched')
     update.message.reply_photo(open("downloads/quote.jpg", 'rb'))
+    update.message.reply_text('If you want to generate another image just send /again')
     return ConversationHandler.END
 
 
 def cancel(update: Update, context: CallbackContext) -> int:
+    """
+    Fallback method to cancel
+
+    Args:
+        update (Update): incomming update object
+        context (CallbackContext): callback for dispatching
+
+    Returns:
+        END (int): status update to end conversation
+    """
     user = update.message.from_user
-    update.message.reply_text('Bye!')
+    update.message.reply_text('Bye bye '+user.username)
     return ConversationHandler.END
 
 
 def main():
+    """
+    Run the main conversation handler
+    """
     # Create the Updater and pass it your bot's token.
     updater = Updater("<token>")
 
@@ -65,7 +135,8 @@ def main():
             CommandHandler('start', start),
             CommandHandler('quote', quote),
             CommandHandler('source', source),
-            CommandHandler('image', image)
+            CommandHandler('image', image),
+            CommandHandler('again', again),
         ],
         states={
             state_quote: [MessageHandler(Filters.text, quote)],
