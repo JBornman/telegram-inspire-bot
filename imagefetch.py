@@ -8,7 +8,7 @@ def fetchimage(search: str):
         This image is stored and renamed to raw.jpg
 
         Args:
-            search (str):
+            search (str): search term to retrieve background image from wallhaven
     """
 
     # Check for the existence of the downloads directory
@@ -22,13 +22,18 @@ def fetchimage(search: str):
         'ratios': '16x9',
         'q': search,
         'sorting': 'random',
-        'seed': 'atxFqe'
+        'seed': 'atxFqe',
+        'purity': '111'
     }
 
     # Send the wallhaven image search request
     r = requests.get(url=URL, params=PARAMS)
     filename = ''
     data = r.json()
+
+    # TODO: if no results redo request with default search
+
+    # TODO: Delete raw if it still exists
 
     #  Save result as raw.jpg
     for idx in range(1):

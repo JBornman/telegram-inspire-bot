@@ -13,12 +13,12 @@ def modifyimage(quote: str, source: str):
     Deletes the original image and saves the edited image.
 
     Args:
-        quote (str):
-        source (str):
+        quote (str): quote to add to the image
+        source (str): author of the quote to be added below the quote
     """
 
-    font = "fonts/FreeMono.ttf"
-    shadowfont = "fonts/FreeMonoBold.ttf"
+    font = "fonts/Montserrat-Regular.ttf"
+    shadowfont = "fonts/Montserrat-Bold.ttf"
     quotesize = 100
     sourcesize = 80
 
@@ -61,8 +61,8 @@ def modifyimage(quote: str, source: str):
             font=myfont,
             fill=(0, 0, 0))
 
-    # Display and save the edited image and delete the original
-    img.show()
+    # Save the edited image and delete the original
+    img = img.convert("RGB")
     img.save("downloads/quote.jpg")
     os.remove("downloads/raw.jpg")
 
