@@ -4,3 +4,5 @@ python-telegram-bot==13.11
 requests==2.27.1
 # Import for image modify
 Pillow==9.0.1
+# Import for environment variables
+python-dotenv==0.19.2

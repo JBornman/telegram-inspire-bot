@@ -1,3 +1,4 @@
+import os
 from turtle import up
 from telegram import Bot, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
@@ -10,12 +11,13 @@ from telegram.ext import (
 )
 from imagefetch import fetchimage
 from imagemodify import modifyimage
+from dotenv import load_dotenv
 
 state_quote, state_source, state_image = range(3)
 quote: str = ''
 source: str = ''
 image_seed: str = ''
-
+load_dotenv()
 
 def start(update: Update, context: CallbackContext) -> int:
     """
@@ -99,7 +101,7 @@ def image(update: Update, context: CallbackContext) -> int:
     Returns:
         END (int): status update to end conversation
     """
-    bot = Bot('<token>')
+    bot = Bot(os.getenv('TOKEN'))
     global image_seed
     chat_id = update.message.chat_id
     image_seed = update.message.text
@@ -138,7 +140,7 @@ def main():
     Run the main conversation handler
     """
     # Create the Updater and pass it your bot's token.
-    updater = Updater("<token>")
+    updater = Updater(os.getenv('TOKEN'))
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
