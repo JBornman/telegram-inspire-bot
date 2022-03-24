@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import os
 from turtle import up
 from telegram import Bot, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
@@ -109,11 +110,12 @@ def image(update: Update, context: CallbackContext) -> int:
         fetchimage(image_seed)
         modifyimage(quote, source)
         bot.send_message(chat_id, 'Done please find attatched')
-        bot.send_photo(chat_id, photo=open("downloads/quote.jpg", 'rb'))
+        bot.send_document(chat_id, open("downloads/quote.jpg", 'rb'))
         update.message.reply_text(
         'If you want to generate another image just send /quote')
         return ConversationHandler.END
-    except: # Image not found error and loop back
+    except Exception as exec: # Image not found error and loop back
+        print(exec)
         bot.send_message(chat_id, 'No images with that seed, please send another seed')
         return state_image
     
