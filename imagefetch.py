@@ -42,6 +42,5 @@ def fetchimage(search: str):
                   'wb') as handler:
             handler.write(img_data)
             temp = handler.name
-            filename = temp.replace('/', '\\')
             print(handler.name)
-        os.rename(filename, 'downloads/raw.jpg')
+        os.rename(temp, 'downloads/raw.jpg')

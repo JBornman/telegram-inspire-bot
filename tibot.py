@@ -1,3 +1,5 @@
+from asyncio.log import logger
+import os
 from turtle import up
 from telegram import Bot, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
@@ -10,12 +12,13 @@ from telegram.ext import (
 )
 from imagefetch import fetchimage
 from imagemodify import modifyimage
+from dotenv import load_dotenv
 
 state_quote, state_source, state_image = range(3)
 quote: str = ''
 source: str = ''
 image_seed: str = ''
-
+load_dotenv()
 
 def start(update: Update, context: CallbackContext) -> int:
     """
@@ -99,7 +102,7 @@ def image(update: Update, context: CallbackContext) -> int:
     Returns:
         END (int): status update to end conversation
     """
-    bot = Bot('<token>')
+    bot = Bot(os.getenv('TOKEN'))
     global image_seed
     chat_id = update.message.chat_id
     image_seed = update.message.text
@@ -107,11 +110,12 @@ def image(update: Update, context: CallbackContext) -> int:
         fetchimage(image_seed)
         modifyimage(quote, source)
         bot.send_message(chat_id, 'Done please find attatched')
-        bot.send_photo(chat_id, photo=open("downloads/quote.jpg", 'rb'))
+        bot.send_document(chat_id, open("downloads/quote.jpg", 'rb'))
         update.message.reply_text(
         'If you want to generate another image just send /quote')
         return ConversationHandler.END
-    except: # Image not found error and loop back
+    except Exception as exec: # Image not found error and loop back
+        print(exec)
         bot.send_message(chat_id, 'No images with that seed, please send another seed')
         return state_image
     
@@ -138,7 +142,7 @@ def main():
     Run the main conversation handler
     """
     # Create the Updater and pass it your bot's token.
-    updater = Updater("<token>")
+    updater = Updater(os.getenv('TOKEN'))
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher

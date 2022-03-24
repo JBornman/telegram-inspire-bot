@@ -18,7 +18,7 @@ def modifyimage(quote: str, source: str):
     """
 
     font = "fonts/Montserrat-Regular.ttf"
-    shadowfont = "fonts/Montserrat-Bold.ttf"
+    shadowfont = "fonts/Montserrat-Regular.ttf"
     quotesize = 100
     sourcesize = 80
 
@@ -33,7 +33,23 @@ def modifyimage(quote: str, source: str):
 
     # Style quote shadow and add to image
     myshadow = ImageFont.truetype(shadowfont, quotesize)
-    I1.multiline_text(position(I1, quote, myshadow),
+    x, y = position(I1, quote, myshadow)
+    I1.multiline_text((x - 1, y - 1),
+                      quote,
+                      font=myshadow,
+                      fill=(255, 255, 255),
+                      align='center')
+    I1.multiline_text((x + 1, y - 1),
+                      quote,
+                      font=myshadow,
+                      fill=(255, 255, 255),
+                      align='center')
+    I1.multiline_text((x - 1, y + 1),
+                      quote,
+                      font=myshadow,
+                      fill=(255, 255, 255),
+                      align='center')
+    I1.multiline_text((x + 1, y + 1),
                       quote,
                       font=myshadow,
                       fill=(255, 255, 255),
@@ -49,10 +65,11 @@ def modifyimage(quote: str, source: str):
 
     # Style source shadow and add to image
     myshadow = ImageFont.truetype(shadowfont, sourcesize)
-    I1.text(positionsource(I1, quote, source, myshadow, 0.1),
-            source,
-            font=myshadow,
-            fill=(255, 255, 255))
+    x, y = positionsource(I1, quote, source, myshadow, 0.1)
+    I1.text((x - 1, y - 1), source, font=myshadow, fill=(255, 255, 255))
+    I1.text((x + 1, y - 1), source, font=myshadow, fill=(255, 255, 255))
+    I1.text((x - 1, y + 1), source, font=myshadow, fill=(255, 255, 255))
+    I1.text((x + 1, y + 1), source, font=myshadow, fill=(255, 255, 255))
 
     # Style source text and add to image
     myfont = ImageFont.truetype(font, sourcesize)
