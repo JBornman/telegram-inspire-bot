@@ -33,9 +33,12 @@ jobs:
 
     steps:
       - id: toLowerCase
-        run: INPUT=${{ env.IMAGE_NAME }} echo "::set-output name=lowerimagename::${INPUT,,}"
+        run: INPUT=${{ github.repository }} echo "::set-output name=lowerimagename::${INPUT,,}"
         
-
+      - name: print lower
+        run: echo ${{ steps.toLowerCase.outputs.lowerimagename }}
+      
+      
       - name: Checkout repository
         uses: actions/checkout@v2
 
