@@ -32,13 +32,6 @@ jobs:
       id-token: write
 
     steps:
-      - id: toLowerCase
-        run: INPUT=${{ github.repository }} echo "::set-output name=lowerimagename::${INPUT,,}"
-        
-      - name: print lower
-        run: echo ${{ steps.toLowerCase.outputs.lowerimagename }}
-      
-      
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -95,4 +88,5 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: cosign sign ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerimagename }}@${{ steps.build-and-push.outputs.digest }}
+        run: INPUT=${{ github.repository }} echo "::set-output name=lowerimagename::${INPUT,,}" && \
+             cosign sign ${{ env.REGISTRY }}/::set-output name=lowerimagename::${INPUT,,}@${{ steps.build-and-push.outputs.digest }}
