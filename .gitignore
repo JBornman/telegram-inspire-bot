@@ -130,3 +130,9 @@ dmypy.json
 
 # VSCode customization
 .vscode
+
+# TiBot image export folder
+Export/
+
+# SonarQube folder
+.scannerwork

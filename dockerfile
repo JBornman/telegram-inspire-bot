@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3
 
 COPY requirements.txt /app/requirements.txt
 
@@ -13,4 +13,3 @@ RUN chmod 755 *
 ENV TOKEN=<bot_token>
 
 CMD ["python", "tibot.py"]
-
