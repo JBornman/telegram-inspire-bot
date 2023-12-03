@@ -1,8 +1,8 @@
 # Import for Telegram Bot
-python-telegram-bot==13.11
+python-telegram-bot
 # Import for image fetch
-requests==2.27.1
+requests
 # Import for image modify
-Pillow==9.0.1
+Pillow
 # Import for environment variables
-python-dotenv==0.19.2
+python-dotenv
