@@ -370,7 +370,7 @@ async def wallhavenimage(update: Update, context: CallbackContext) -> int:
         context.chat_data["ChangeBG"] = False
 
     try:  # Try to get the image and map the quote
-        wait_msg = query.message.reply_text(PLZ_WAIT_MSG)
+        wait_msg = await query.message.reply_text(PLZ_WAIT_MSG)
 
         bg = wallhaven.get_random_image(context.chat_data["Image_Seed"])
         final_img = image_modify.draw_text_layer(
@@ -380,16 +380,10 @@ async def wallhavenimage(update: Update, context: CallbackContext) -> int:
             context.chat_data["Date"],
         )
 
-        await query.message.reply_document(
-            tele_img_convert(final_img), caption=FIRSTIMAGEQUOTE
-        )
-        await context.bot.deleteMessage(
-            message_id=wait_msg.message_id, chat_id=query.message.chat_id
-        )
+        await query.message.reply_document(tele_img_convert(final_img), caption=FIRSTIMAGEQUOTE)
+        await context.bot.deleteMessage(message_id=wait_msg.message_id, chat_id=query.message.chat_id)
 
-        context.chat_data["LocalStorageFilePath"] = local_storage.do_local_storage(
-            update, context, final_img
-        )
+        context.chat_data["LocalStorageFilePath"] = await local_storage.do_local_storage(update, context, final_img)
 
         reply_markup = InlineKeyboardMarkup(FinishMenuKeyboard)
         await query.message.reply_text(FINISHEDMESSAGE, reply_markup=reply_markup)
@@ -399,12 +393,12 @@ async def wallhavenimage(update: Update, context: CallbackContext) -> int:
         print(
             f"Wallhaven scraper found no results for {context.chat_data['Image_Seed']}"
         )
-        query.message.reply_text("No images with that seed, please send another seed")
-        return new_img_src(update, context)
+        await query.message.reply_text("No images with that seed, please send another seed")
+        return await new_img_src(update, context)
     except Exception as exc_txt:  # Catch anything else that might break
         print(exc_txt)
-        query.message.reply_text("I'm sorry, Something went wrong")
-        return new_img_src(update, context)
+        await query.message.reply_text("I'm sorry, Something went wrong")
+        return await new_img_src(update, context)
 
 
 
@@ -427,9 +421,9 @@ async def bingimage(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     await query.answer()
 
-    wait_msg = query.message.reply_text(PLZ_WAIT_MSG)
+    wait_msg = await query.message.reply_text(PLZ_WAIT_MSG)
 
-    bg = bing.get_image()
+    bg = await bing.get_image()
     final_img = image_modify.draw_text_layer(
         bg,
         context.chat_data["Quote"],
@@ -438,11 +432,9 @@ async def bingimage(update: Update, context: CallbackContext) -> int:
     )
 
     await query.message.reply_document(tele_img_convert(final_img), caption=FIRSTIMAGEQUOTE)
-    await context.bot.deleteMessage(
-        message_id=wait_msg.message_id, chat_id=query.message.chat_id
-    )
+    await context.bot.deleteMessage( message_id=wait_msg.message_id, chat_id=query.message.chat_id )
 
-    context.chat_data["LocalStorageFilePath"] = local_storage.do_local_storage(
+    context.chat_data["LocalStorageFilePath"] = await local_storage.do_local_storage(
         update, context, final_img
     )
 
@@ -487,7 +479,7 @@ async def unsplashimage(update: Update, context: CallbackContext) -> int:
     try:  # Try to get the image and map the quote
         wait_msg = query.message.reply_text(PLZ_WAIT_MSG)
 
-        bg_tuple = unsplash.get_image(context.chat_data["Image_Seed"])
+        bg_tuple = await unsplash.get_image(context.chat_data["Image_Seed"])
         final_img = image_modify.draw_text_layer(
             bg_tuple[2],
             context.chat_data["Quote"],
@@ -507,7 +499,7 @@ async def unsplashimage(update: Update, context: CallbackContext) -> int:
             message_id=wait_msg.message_id, chat_id=query.message.chat_id
         )
 
-        context.chat_data["LocalStorageFilePath"] = local_storage.do_local_storage(
+        context.chat_data["LocalStorageFilePath"] = await local_storage.do_local_storage(
             update, context, final_img
         )
 
@@ -542,8 +534,8 @@ async def uploadedimage(update: Update, context: CallbackContext) -> int:
         state_done_menu (int): return to conversation handler and wait for a completed menu option before executing the relevant method
     """
 
-    imagefile = context.bot.get_file(update.message.photo[-1].file_id)
-    imagebytes = io.BytesIO(imagefile.download_as_bytearray())
+    imagefile = await update.message.photo[-1].get_file()
+    imagebytes = io.BytesIO(await imagefile.download_as_bytearray())
 
     bg = Image.open(imagebytes)
 
@@ -555,7 +547,7 @@ async def uploadedimage(update: Update, context: CallbackContext) -> int:
     )
     await update.message.reply_document(tele_img_convert(final_img), caption=FIRSTIMAGEQUOTE)
 
-    context.chat_data["LocalStorageFilePath"] = local_storage.do_local_storage(
+    context.chat_data["LocalStorageFilePath"] = await local_storage.do_local_storage(
         update, context, final_img
     )
 
