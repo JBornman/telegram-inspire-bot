@@ -1,12 +1,10 @@
 FROM python:3
 
-COPY requirements.txt /app/requirements.txt
-
-RUN python -m pip install -r /app/requirements.txt
-
 COPY . /app
 
 WORKDIR /app
+
+RUN pip install -r requirements.txt
 
 RUN chmod 755 *
 
