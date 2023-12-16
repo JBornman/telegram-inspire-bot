@@ -1,7 +1,7 @@
 # Import for Telegram Bot
-python-telegram-bot == 13.15
+python-telegram-bot == 13
 # Import for image fetch
-requests
+requests == 2.29
 # Import for image modify
 Pillow
 # Import for environment variables
