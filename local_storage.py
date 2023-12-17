@@ -4,23 +4,23 @@ from datetime import datetime
 
 
 
-def get_user_id_field(update):
+def get_user_id_field(from_user):
     """
         Returns the term that will uniquely identify the user in an easily readible format.
         A username will be used if its set.
         If no username is set, The first name & Chat ID will be used
         
         Args:
-            update (Update): incomming update object
+            from_user (Update): from_message attribute of the the callback_query attribute or of the message attribute (non-callback)
 
         Return:
             User Identifier (str): Term that can be used to uniquely identify the user
     """
 
-    if update.callback_query.from_user.username:
-        return update.callback_query.from_user.username
+    if from_user.username:
+        return from_user.username
 
-    return f"{update.callback_query.from_user.first_name}-{update.callback_query.from_user.id}"
+    return f"{from_user.first_name}-{from_user.id}"
 
 
 
@@ -40,10 +40,14 @@ def evaluation(update):
 
     chat_list = json.loads( os.getenv("LSChatList") )
 
-    if str(update.callback_query.message.chat.id) in chat_list:
-        return generate_file_path(update)
-    else:
-        return False
+    try:
+        if str(update.callback_query.message.chat_id) in chat_list:
+            return generate_file_path(update.callback_query.message, update.callback_query.from_user)
+    except Exception:
+        if str(update.message.chat_id) in chat_list:
+            return generate_file_path(update.message, update.message.from_user)
+
+    return False
 
 
 
@@ -51,7 +55,7 @@ def evaluation(update):
 
 
 
-def pvt_chat_filename(update):
+def pvt_chat_filename(from_user):
     """
     Generates the file path for the quotes created in a private chat (DM the bot)
 
@@ -62,25 +66,25 @@ def pvt_chat_filename(update):
         File path (str): Returns the full path of the file to be saved
     """
 
-    filename = "{}-{}.png".format(get_user_id_field(update), datetime.strftime(datetime.now(), "%-d%-m%y%H%M%S"))
+    filename = "{}-{}.png".format(get_user_id_field(from_user), datetime.strftime(datetime.now(), "%-d%-m%y%H%M%S"))
     path = os.path.join("Export", "Private", filename)
     return path
 
 
 
-def group_chat_filename(update):
+def group_chat_filename(message, from_user):
     """
     Generates the file path for the quotes created in a group chat
 
     Args:
-        update (Update): incomming update object
+        message (Update): message attribute of the incomming update object
 
     Returns:
         File path (str): Returns the full path of the file to be saved
     """
 
-    group_name = update.callback_query.message.chat.title
-    user_id_field = get_user_id_field(update)
+    group_name = message.chat.title
+    user_id_field = get_user_id_field(from_user)
     timestamp = datetime.strftime( datetime.now(), "%-d%-m%y%H%M%S" )
 
     filename = f"{user_id_field}-{timestamp}.png"
@@ -94,21 +98,21 @@ def group_chat_filename(update):
 
 
 
-def generate_file_path(update):
+def generate_file_path(message, from_user):
     """
     Selector method that calls the correct file name generator method based on the group chat type
 
     Args:
-        update (Update): incomming update object
+        message (Update): message attribute of the incomming update object
 
     Returns:
         File path (str): Returns the full path of the file to be saved
     """
 
-    if update.callback_query.message.chat.type == "private":
-        return pvt_chat_filename(update)
-    else:
-        return group_chat_filename(update)
+    if message.chat.type == "private":
+        return pvt_chat_filename(from_user)
+
+    return group_chat_filename(message, from_user)
 
 
 
@@ -149,7 +153,7 @@ def do_local_storage(update, context, finalimg):
         This ensures that the context is kept up to date and no additional processing or resaving context is done unless necessary
     """
 
-    if not  context.chat_data.get("LocalStorageFilePath"):
+    if not context.chat_data.get("LocalStorageFilePath"):
         context.chat_data["LocalStorageFilePath"] = evaluation(update)
 
     if context.chat_data.get("LocalStorageFilePath"):
