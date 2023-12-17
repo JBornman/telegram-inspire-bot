@@ -1,5 +1,5 @@
 # Import for Telegram Bot
-python-telegram-bot == 13
+python-telegram-bot < 20
 # Import for image fetch
 requests == 2.29
 # Import for image modify
