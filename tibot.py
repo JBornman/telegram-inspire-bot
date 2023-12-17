@@ -45,6 +45,7 @@ FinishMenuKeyboard = [
         InlineKeyboardButton("I'm Done", callback_data=str(cbd_done)),
     ],
 ]
+finish_kb_markup = InlineKeyboardMarkup(FinishMenuKeyboard)
 
 provider_keyboard = [
     [
@@ -52,6 +53,7 @@ provider_keyboard = [
         InlineKeyboardButton("Unsplash", callback_data=str(cbd_src_unsplash)),
     ]
 ]
+provider_markup = InlineKeyboardMarkup(provider_keyboard)
 
 img_search_keyboard = [
     [
@@ -60,6 +62,7 @@ img_search_keyboard = [
     ],
     [InlineKeyboardButton("Bing Image of the day", callback_data="#BING#")],
 ]
+img_search_markup = InlineKeyboardMarkup(img_search_keyboard)
 
 # Strings
 ASKFORIMAGE = "What term should I used to search for a background image?\nYou can send me a (compressed) image or choose an option below"
@@ -232,8 +235,7 @@ def date_selection(update: Update, context: CallbackContext) -> int:
 
     context.chat_data["Date"] = get_date_string(query.data)
 
-    reply_markup = InlineKeyboardMarkup(img_search_keyboard)
-    query.message.edit_text(ASKFORIMAGE, reply_markup=reply_markup)
+    query.message.edit_text(ASKFORIMAGE, reply_markup=img_search_markup)
 
     return state_image
 
@@ -253,8 +255,7 @@ def date_text(update: Update, context: CallbackContext) -> int:
 
     context.chat_data["Date"] = update.message.text
 
-    reply_markup = InlineKeyboardMarkup(img_search_keyboard)
-    update.message.reply_text(ASKFORIMAGE, reply_markup=reply_markup)
+    update.message.reply_text(ASKFORIMAGE, reply_markup=img_search_markup)
     return state_image
 
 
@@ -273,12 +274,10 @@ def img_search_term(update: Update, context: CallbackContext) -> int:
 
     context.chat_data["Image_Seed"] = update.message.text
 
-    reply_markup = InlineKeyboardMarkup(provider_keyboard)
-
     context.bot.delete_message(
         chat_id=update.effective_chat.id, message_id=update.message.message_id - 1
     )
-    update.message.reply_text(ASKFORPROVIDER, reply_markup=reply_markup)
+    update.message.reply_text(ASKFORPROVIDER, reply_markup=provider_markup)
 
     return state_img_provider
 
@@ -301,8 +300,7 @@ def img_search_term_cb(update: Update, context: CallbackContext) -> int:
 
     context.chat_data["Image_Seed"] = query.data
 
-    reply_markup = InlineKeyboardMarkup(provider_keyboard)
-    query.message.edit_text(ASKFORPROVIDER, reply_markup=reply_markup)
+    query.message.edit_text(ASKFORPROVIDER, reply_markup=provider_markup)
 
     return state_img_provider
 
@@ -390,8 +388,7 @@ def wallhavenimage(update: Update, context: CallbackContext) -> int:
             update, context, final_img
         )
 
-        reply_markup = InlineKeyboardMarkup(FinishMenuKeyboard)
-        query.message.reply_text(FINISHEDMESSAGE, reply_markup=reply_markup)
+        query.message.reply_text(FINISHEDMESSAGE, reply_markup=finish_kb_markup)
 
         return state_done_menu
     except IndexError:  # Catch Index Error (caused by no results)
@@ -445,8 +442,7 @@ def bingimage(update: Update, context: CallbackContext) -> int:
         update, context, final_img
     )
 
-    reply_markup = InlineKeyboardMarkup(FinishMenuKeyboard)
-    query.message.reply_text(FINISHEDMESSAGE, reply_markup=reply_markup)
+    query.message.reply_text(FINISHEDMESSAGE, reply_markup=finish_kb_markup)
 
     return state_done_menu
 
@@ -510,8 +506,7 @@ def unsplashimage(update: Update, context: CallbackContext) -> int:
             update, context, final_img
         )
 
-        reply_markup = InlineKeyboardMarkup(FinishMenuKeyboard)
-        query.message.reply_text(FINISHEDMESSAGE, reply_markup=reply_markup)
+        query.message.reply_text(FINISHEDMESSAGE, reply_markup=finish_kb_markup)
 
         return state_done_menu
     except IndexError:  # Catch Index Error (caused by no results)
@@ -558,8 +553,7 @@ def uploadedimage(update: Update, context: CallbackContext) -> int:
         update, context, final_img
     )
 
-    reply_markup = InlineKeyboardMarkup(FinishMenuKeyboard)
-    update.message.reply_text(FINISHEDMESSAGE, reply_markup=reply_markup)
+    update.message.reply_text(FINISHEDMESSAGE, reply_markup=finish_kb_markup)
 
     return state_done_menu
 
@@ -580,8 +574,7 @@ def new_img_src(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
 
-    reply_markup = InlineKeyboardMarkup(img_search_keyboard)
-    query.message.reply_text(ASKFORIMAGE, reply_markup=reply_markup)
+    query.message.reply_text(ASKFORIMAGE, reply_markup=img_search_markup)
 
     return state_image
 
