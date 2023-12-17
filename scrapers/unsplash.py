@@ -27,6 +27,8 @@ def fetch_image_data(search: str):
 
     if r.status_code == 404:
         return None
+    elif r.status_code != 200:
+        print(f"[Unsplash Scraper] {r.reason} - {r.text}")
 
     data = r.json()
 
